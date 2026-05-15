@@ -1,8 +1,10 @@
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
+import { useAppContext } from '../context/AppContext';
 import styles from './Header.module.css';
 
 export default function Header({ onNavigate, userRole }) {
+  const { theme, toggleTheme } = useAppContext();
   const handleLogout = () => {
     signOut(auth).catch((error) => {
       console.error("Error al cerrar sesión:", error);
@@ -17,12 +19,7 @@ export default function Header({ onNavigate, userRole }) {
         <div className={styles.left}>
           <div className={styles.logoGroup}>
             <div className={styles.logoCircle}>
-              <svg viewBox="0 0 48 48" fill="none">
-                <circle cx="24" cy="24" r="22" fill="#5c8a34" />
-                <path d="M10 24C10 24 15 15 24 15C33 15 38 24 38 24" stroke="white" strokeWidth="2" strokeLinecap="round" />
-                <path d="M12 28C12 28 17 21 24 21C31 21 36 28 36 28" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-                <path d="M15 32C15 32 19 27 24 27C29 27 33 32 33 32" stroke="white" strokeWidth="1" strokeLinecap="round" />
-              </svg>
+              <img src="/logo.png" alt="Finca Digital Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
             </div>
             <div className={styles.brandInfo}>
               <h1 className={styles.brandName}>FINCA DIGITAL</h1>
@@ -42,6 +39,9 @@ export default function Header({ onNavigate, userRole }) {
                 Usuarios
               </button>
             )}
+            <button className={styles.themeToggle} onClick={toggleTheme} title="Cambiar Tema">
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
             <button className={styles.outlineBtn} onClick={handleLogout}>
               Cerrar Sesión
             </button>

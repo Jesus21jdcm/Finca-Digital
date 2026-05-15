@@ -1,36 +1,71 @@
 import { useState } from 'react';
 import { auth, db } from '../firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import styles from './Login.module.css';
 
 export default function Login() {
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
     try {
-      if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        const userCred = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, 'users', userCred.user.uid), {
-          email: userCred.user.email,
-          role: userCred.user.email === 'admin@fincadigital.com' ? 'admin' : 'encargado',
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      if (err.code === 'auth/invalid-credential') setError('Credenciales incorrectas o usuario no encontrado.');
+      else setError('Error de autenticación. Verifica tus datos e inténtalo de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // Verificar si el usuario existe en Firestore, si no, crearlo como admin (si es el primero)
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          email: user.email,
+          role: 'admin', // Por defecto el primero que entra por Google es admin para facilitar setup
           createdAt: new Date().toISOString()
         });
       }
     } catch (err) {
-      if (err.code === 'auth/invalid-credential') setError('Credenciales incorrectas o usuario no encontrado.');
-      else if (err.code === 'auth/email-already-in-use') setError('El correo ya está registrado.');
-      else if (err.code === 'auth/weak-password') setError('La contraseña debe tener al menos 6 caracteres.');
-      else setError('Error de autenticación. Verifica tus datos e inténtalo de nuevo.');
+      console.error(err);
+      setError('Error al iniciar sesión con Google.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!email) {
+      setError('Por favor ingresa tu correo electrónico para recuperar la contraseña.');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setSuccess('Se ha enviado un enlace de recuperación a tu correo.');
+    } catch (err) {
+      console.error(err);
+      setError('No se pudo enviar el correo de recuperación. Verifica el email.');
     } finally {
       setLoading(false);
     }
@@ -59,11 +94,10 @@ export default function Login() {
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
-          <h2 className={styles.formTitle}>
-            {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
-          </h2>
+          <h2 className={styles.formTitle}>Iniciar Sesión</h2>
 
           {error && <div className={styles.errorMessage}>{error}</div>}
+          {success && <div className={styles.successMessage}>{success}</div>}
 
           <div className={styles.inputGroup}>
             <label className={styles.label}>Correo Electrónico</label>
@@ -80,6 +114,12 @@ export default function Login() {
             </div>
           </div>
 
+          <div className={styles.forgotPassRow}>
+            <button type="button" className={styles.forgotBtn} onClick={handleResetPassword}>
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
+
           <div className={styles.inputGroup}>
             <label className={styles.label}>Contraseña</label>
             <div className={styles.inputWrapper}>
@@ -90,30 +130,27 @@ export default function Login() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
+                required={!success}
               />
             </div>
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>
-            {loading ? 'Cargando...' : (isLogin ? 'Ingresar al Panel' : 'Registrar Cuenta')}
+            {loading ? 'Cargando...' : 'Ingresar al Panel'}
+          </button>
+
+          <div className={styles.divider}>
+            <span>O ingresa con</span>
+          </div>
+
+          <button type="button" className={styles.googleBtn} onClick={handleGoogleLogin} disabled={loading}>
+            <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google" />
+            Acceder con Google
           </button>
         </form>
 
         <div className={styles.footer}>
-          <span className={styles.footerText}>
-            {isLogin ? '¿No tienes cuenta en la finca?' : '¿Ya eres parte de Finca Digital?'}
-          </span>
-          <button
-            type="button"
-            className={styles.switchBtn}
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError('');
-            }}
-          >
-            {isLogin ? 'Regístrate aquí' : 'Inicia sesión'}
-          </button>
+          <span className={styles.footerText}>Acceso restringido a personal autorizado</span>
         </div>
       </div>
     </div>

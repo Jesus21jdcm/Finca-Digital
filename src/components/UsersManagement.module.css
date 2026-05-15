@@ -318,3 +318,22 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+.deleteBtn {
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background: #fecaca;
+  transform: scale(1.05);
+}

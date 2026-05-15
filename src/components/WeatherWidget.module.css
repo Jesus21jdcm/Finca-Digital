@@ -84,24 +84,30 @@
     flex-direction: column;
     gap: 24px;
   }
+
   .right {
     width: 100%;
     order: -1;
   }
+
   .cloudWrapper {
     width: 120px;
     height: 90px;
   }
+
   .temp {
     font-size: 54px;
     text-align: center;
   }
+
   .locationInfo {
     text-align: center;
   }
+
   .location {
     font-size: 16px;
   }
+
   .forecast {
     justify-content: center;
     gap: 12px;
@@ -112,15 +118,19 @@
   .weatherCard {
     padding: 16px;
   }
+
   .temp {
     font-size: 42px;
   }
+
   .conditionText {
     font-size: 14px;
   }
+
   .forecast {
     gap: 8px;
   }
+
   .fTime {
     font-size: 9px;
   }

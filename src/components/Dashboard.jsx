@@ -1,26 +1,45 @@
-import { useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import WeatherWidget from './WeatherWidget';
+import MiniChart from './MiniChart';
 import styles from './Dashboard.module.css';
-
-const Sparkline = ({ color }) => (
-  <svg width="180" height="40" viewBox="0 0 180 40" className={styles.sparkline}>
-    <path
-      d="M0 35 Q 20 15, 40 30 T 80 20 T 120 30 T 160 15 T 180 25"
-      fill="none"
-      stroke={color}
-      strokeWidth="2.5"
-      strokeLinecap="round"
-    />
-  </svg>
-);
 
 export default function Dashboard() {
   const { data, loading } = useAppContext();
 
   if (loading) return null;
 
-  const userEmail = data?.user?.email || 'admin@fincadigital.com';
+  const user = data.user || { nombre: 'admin', rol: 'Administrador', email: 'admin@fincadigital.com' };
+  const cropStats = data.cultivos || {};
+
+  const weather = data?.weather || {};
+  const isRainy = weather.pop > 50 || (weather.condition && weather.condition.toLowerCase().includes('lluvia'));
+  const isSunny = weather.pop < 20 && weather.temp > 30;
+
+  let alertText = (
+    <>
+      • Clima estable: Condiciones óptimas para labores manuales. <br />
+      • Revisar bitácora de riego (Pendiente). <br />
+      • Realizar monitoreo preventivo de plagas.
+    </>
+  );
+
+  if (isRainy) {
+    alertText = (
+      <>
+        • Alta probabilidad de lluvia ({weather.pop}%): Postergar fertilización. <br />
+        • Asegurar drenajes en lotes bajos. <br />
+        • Suspender labores de fumigación.
+      </>
+    );
+  } else if (isSunny) {
+    alertText = (
+      <>
+        • Alta temperatura ({weather.temp}°C): Aumentar frecuencia de riego. <br />
+        • Proteger plantines del sol directo. <br />
+        • Hidratar al personal de campo.
+      </>
+    );
+  }
 
   return (
     <div className={styles.dashboard}>
@@ -30,13 +49,13 @@ export default function Dashboard() {
           {/* Perfil */}
           <div className={styles.profileCard}>
             <div className={styles.profileAvatarLarge}>
-              <img src="https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff&size=128" alt="Avatar" />
+              <img src={`https://ui-avatars.com/api/?name=${user.nombre}&background=10b981&color=fff&size=128`} alt="Avatar" />
             </div>
             <div className={styles.profileInfo}>
-              <h2 className={styles.profileName}>admin <span className={styles.profileRole}>| Administrador</span></h2>
+              <h2 className={styles.profileName}>{user.nombre} <span className={styles.profileRole}>| {user.rol}</span></h2>
               <span className={styles.profileStatus}>Activo</span>
               <div className={styles.profileMeta}>
-                <p>{userEmail}</p>
+                <p>{user.email}</p>
                 <p>Sede Principal, Barinas</p>
                 <p>Último acceso: Hoy</p>
               </div>
@@ -49,47 +68,31 @@ export default function Dashboard() {
           </div>
 
           <div className={styles.cropCards}>
-            {/* Maíz */}
-            <div className={styles.cropCard}>
-              <div className={styles.cropTop}>
-                <div className={styles.cropIcon}>
-                  <img src="https://cdn-icons-png.flaticon.com/512/1205/1205166.png" alt="Maiz" />
-                </div>
-                <div className={styles.cropHeader}>
-                  <div className={styles.cropTitleRow}>
-                    <h4 className={styles.cropTitle}>Maíz</h4>
-                    <span className={styles.cropTime}>Últimos 7 días</span>
+            {Object.entries(cropStats).filter(([_, s]) => s.count > 0).map(([key, s]) => (
+              <div key={key} className={styles.cropCard}>
+                <div className={styles.cropTop}>
+                  <div className={styles.cropIcon}>
+                    <img 
+                      src={`/${key}.png`} 
+                      alt={key} 
+                      onError={(e) => { e.target.onerror = null; e.target.src = '/flowerpot_icon.svg'; }} 
+                    />
                   </div>
-                  <p className={styles.cropDetail}>2 campos activos</p>
-                  <p className={styles.cropDetail}>0.8 ha totales</p>
-                </div>
-              </div>
-              <div className={styles.cropBottom}>
-                <Sparkline color="#d97706" />
-                <div className={styles.cropCount}>2</div>
-              </div>
-            </div>
-
-            {/* Yuca */}
-            <div className={styles.cropCard}>
-              <div className={styles.cropTop}>
-                <div className={styles.cropIcon}>
-                  <img src="https://cdn-icons-png.flaticon.com/512/1041/1041300.png" alt="Yuca" />
-                </div>
-                <div className={styles.cropHeader}>
-                  <div className={styles.cropTitleRow}>
-                    <h4 className={styles.cropTitle}>Yuca</h4>
-                    <span className={styles.cropTime}>Últimos 7 días</span>
+                  <div className={styles.cropHeader}>
+                    <div className={styles.cropTitleRow}>
+                      <h4 className={styles.cropTitle}>{key.charAt(0).toUpperCase() + key.slice(1)}</h4>
+                      <span className={styles.cropTime}>Últimos 7 días</span>
+                    </div>
+                    <p className={styles.cropDetail}>{s.campos} campos activos</p>
+                    <p className={styles.cropDetail}>{s.hectareas}</p>
                   </div>
-                  <p className={styles.cropDetail}>3 campos activos</p>
-                  <p className={styles.cropDetail}>10.7 ha totales</p>
+                </div>
+                <div className={styles.cropBottom}>
+                  <MiniChart data={s.data} color={key === 'maiz' ? '#d97706' : '#10b981'} />
+                  <div className={styles.cropCount}>{s.count}</div>
                 </div>
               </div>
-              <div className={styles.cropBottom}>
-                <Sparkline color="#10b981" />
-                <div className={styles.cropCount}>3</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -107,9 +110,7 @@ export default function Dashboard() {
             <div className={styles.alertContent}>
               <h4 className={styles.alertTitle}>ALERTA DE LOGÍSTICA / TAREAS ASIGNADAS:</h4>
               <p className={styles.alertText}>
-                • Alta probabilidad de lluvia: Postergar fertilización. <br />
-                • Asegurar drenajes en lotes bajos. <br />
-                • Revisar bitácora de riego (Pendiente).
+                {alertText}
               </p>
             </div>
           </div>
@@ -123,11 +124,11 @@ export default function Dashboard() {
             <div className={styles.statsContent}>
               <div className={styles.statsLeft}>
                 <div className={styles.totalBadge}>
-                  <span className={styles.totalNum}>5</span>
+                  <span className={styles.totalNum}>{data.stats['cultivos-activos'].count}</span>
                   <p className={styles.totalLabel}>Total Cultivos Activos</p>
                 </div>
                 <div className={styles.statsIconPlant}>
-                  <img src="https://cdn-icons-png.flaticon.com/512/628/628283.png" alt="Plant" />
+                  <img src="/generic_plant.png" alt="Plant" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
                 </div>
               </div>
               <div className={styles.statsRight}>
@@ -140,12 +141,13 @@ export default function Dashboard() {
                   </svg>
                   <div className={styles.donutCenter}>
                     <span className={styles.donutTotal}>Total</span>
-                    <span className={styles.donutValue}>12.0 ha</span>
+                    <span className={styles.donutValue}>{Object.values(cropStats).reduce((acc, curr) => acc + (parseFloat(curr.hectareas) || 0), 0).toFixed(1)} ha</span>
                   </div>
                 </div>
                 <div className={styles.legend}>
-                  <p>Yuca 82% (10.7 ha)</p>
-                  <p>Maíz 8% (0.9 ha)</p>
+                  {Object.entries(cropStats).filter(([_, s]) => s.count > 0).map(([key, s]) => (
+                    <p key={key}>{key.charAt(0).toUpperCase() + key.slice(1)} ({s.hectareas})</p>
+                  ))}
                 </div>
               </div>
             </div>
@@ -155,19 +157,25 @@ export default function Dashboard() {
           <div className={styles.tasksCard}>
             <div className={styles.tasksHeader}>
               <h3 className={styles.tasksTitle}>TAREAS PENDIENTES</h3>
-              <span className={styles.tasksTotal}>Total: 0</span>
+              <span className={styles.tasksTotal}>Total: {data.activeCrops.reduce((acc, c) => acc + c._tareasPendientes, 0)}</span>
             </div>
             <div className={styles.tasksContent}>
               <div className={styles.tasksLeft}>
-                <div className={styles.tasksCircle}>0</div>
+                <div className={styles.tasksCircle}>{data.activeCrops.reduce((acc, c) => acc + c._tareasPendientes, 0)}</div>
               </div>
               <div className={styles.tasksRight}>
                 <ul className={styles.tasksList}>
-                  <li><s>Fumigación de Maíz (Campo 1)</s></li>
-                  <li><s>Riego de Yuca (Campo 3)</s></li>
-                  <li><s>Riego de Yuca (Campo 3)</s></li>
+                  {data.activeCrops.slice(0, 3).map(c => (
+                    c.tareas.filter(t => !t.completada).slice(0, 1).map((t, idx) => (
+                      <li key={`${c.id}-${idx}`}>{t.nombre} ({c.rubro})</li>
+                    ))
+                  ))}
                 </ul>
-                <p className={styles.tasksFooter}>No hay labores pendientes. ¡Todo al día!</p>
+                <p className={styles.tasksFooter}>
+                  {data.activeCrops.some(c => c._tareasPendientes > 0) 
+                    ? "Tienes labores pendientes por completar." 
+                    : "No hay labores pendientes. ¡Todo al día!"}
+                </p>
               </div>
             </div>
           </div>

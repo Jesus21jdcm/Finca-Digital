@@ -1,8 +1,3 @@
-/**
- * ConfiguracionWhatsApp.jsx
- * Permite al usuario vincular su sesión de WhatsApp (vía QR)
- * y activar/desactivar el envío de alertas por WhatsApp.
- */
 
 import { useState, useEffect } from 'react';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';

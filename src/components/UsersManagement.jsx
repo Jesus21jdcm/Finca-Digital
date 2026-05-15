@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { fetchAllUsers, updateUserRole, createNewUser } from '../services/userService';
+import { auth } from '../firebase';
+import { fetchAllUsers, updateUserRole, createNewUser, deleteUser } from '../services/userService';
+import { useAppContext } from '../context/AppContext';
 import styles from './UsersManagement.module.css';
 
 export default function UsersManagement() {
@@ -14,6 +16,8 @@ export default function UsersManagement() {
   const [newRole, setNewRole] = useState('encargado');
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
+
+  const { showAlert, hideAlert } = useAppContext();
 
   useEffect(() => {
     fetchUsers();
@@ -42,6 +46,51 @@ export default function UsersManagement() {
     }
   };
 
+  const handleDeleteUser = async (userId) => {
+    if (userId === auth.currentUser?.uid) {
+      showAlert({
+        type: 'error',
+        title: 'Acción Denegada',
+        message: 'No puedes eliminar tu propia cuenta de administrador.',
+        confirmText: 'Entendido'
+      });
+      return;
+    }
+
+    showAlert({
+      type: 'warning',
+      title: '¿Eliminar usuario?',
+      message: 'Esta acción borrará permanentemente el perfil de Firestore. El acceso del usuario será revocado.',
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+      onConfirm: async () => {
+        hideAlert();
+        setUpdating(userId);
+        try {
+          await deleteUser(userId);
+          setUsers(users.filter(u => u.id !== userId));
+          showAlert({
+            type: 'success',
+            title: 'Usuario Eliminado',
+            message: 'El usuario ha sido removido exitosamente del sistema.',
+            confirmText: 'Excelente'
+          });
+        } catch (error) {
+          console.error("Error deleting user:", error);
+          showAlert({
+            type: 'error',
+            title: 'Error',
+            message: 'Hubo un problema al intentar eliminar el usuario.',
+            confirmText: 'Reintentar'
+          });
+        } finally {
+          setUpdating(null);
+        }
+      }
+    });
+  };
+
+
   const handleCreateUser = async (e) => {
     e.preventDefault();
     setCreating(true);
@@ -57,6 +106,13 @@ export default function UsersManagement() {
       setNewEmail('');
       setNewPassword('');
       setNewRole('encargado');
+      
+      showAlert({
+        type: 'success',
+        title: 'Usuario Creado',
+        message: `El usuario ${newEmail} ha sido registrado correctamente con el rol de ${newRole}.`,
+        confirmText: 'Genial'
+      });
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') setCreateError('El correo ya está registrado.');
       else if (err.code === 'auth/weak-password') setCreateError('La contraseña debe tener al menos 6 caracteres.');
@@ -119,6 +175,14 @@ export default function UsersManagement() {
                       <option value="empleado">Empleado</option>
                     </select>
                     {updating === user.id && <span className={styles.saving}>Guardando...</span>}
+                    <button 
+                      className={styles.deleteBtn}
+                      onClick={() => handleDeleteUser(user.id)}
+                      disabled={updating === user.id}
+                      title="Eliminar Usuario"
+                    >
+                      🗑️
+                    </button>
                   </div>
                 </td>
               </tr>

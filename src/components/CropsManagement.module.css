@@ -25,7 +25,7 @@
   border-radius: 16px;
   width: fit-content;
   border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .tab {
@@ -42,7 +42,7 @@
 .tabActive {
   background-color: var(--gray-900);
   color: white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 /* Catalog */
@@ -59,7 +59,7 @@
   flex-direction: column;
   gap: 16px;
   transition: transform 0.3s;
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .catalogCard:hover {
@@ -72,15 +72,22 @@
   gap: 12px;
 }
 
-.catalogEmoji { font-size: 32px; }
-.catalogName { font-size: 20px; font-weight: 800; color: var(--gray-900); }
+.catalogEmoji {
+  font-size: 32px;
+}
+
+.catalogName {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gray-900);
+}
 
 .alertaText {
   font-size: 13px;
   font-weight: 500;
   color: var(--gray-700);
   line-height: 1.5;
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
   padding: 12px;
   border-radius: 12px;
 }
@@ -97,8 +104,8 @@
   backdrop-filter: blur(10px);
   padding: 28px;
   border-radius: 28px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   transition: all 0.3s;
 }
 
@@ -109,8 +116,18 @@
   margin-bottom: 24px;
 }
 
-.siembraRubro { font-size: 20px; font-weight: 800; color: var(--gray-900); margin-bottom: 4px; }
-.siembraMeta { font-size: 13px; color: var(--gray-500); font-weight: 600; }
+.siembraRubro {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+
+.siembraMeta {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-weight: 600;
+}
 
 .headerActions {
   display: flex;
@@ -119,7 +136,7 @@
 
 .iconBtn {
   background: white;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   width: 36px;
   height: 36px;
   border-radius: 10px;
@@ -128,7 +145,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .iconBtn:hover {
@@ -143,7 +160,7 @@
 
 .progressBar {
   height: 10px;
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 5px;
   overflow: hidden;
   margin-bottom: 10px;
@@ -155,7 +172,11 @@
   transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.progressLabel { font-size: 12px; font-weight: 800; color: var(--gray-500); }
+.progressLabel {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gray-500);
+}
 
 /* Tasks Section */
 .tasksHeader {
@@ -165,7 +186,13 @@
   margin-bottom: 16px;
 }
 
-.tasksTitle { font-size: 14px; font-weight: 800; color: var(--gray-900); text-transform: uppercase; letter-spacing: 0.5px; }
+.tasksTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--gray-900);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
 .addTaskBtn {
   background: var(--gray-900);
@@ -181,7 +208,7 @@
 
 .addTaskBtn:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .tareasList {
@@ -199,14 +226,14 @@
   padding: 16px;
   background: white;
   border-radius: 16px;
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px solid rgba(0, 0, 0, 0.03);
   transition: all 0.2s;
 }
 
 .tareaItem:hover {
   transform: translateX(4px);
   border-color: var(--gray-200);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .tareaDetails {
@@ -216,8 +243,18 @@
   cursor: pointer;
 }
 
-.tareaName { font-size: 14px; font-weight: 700; color: var(--gray-900); }
-.tareaDate { font-size: 12px; color: var(--gray-500); font-weight: 600; margin-top: 2px; }
+.tareaName {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.tareaDate {
+  font-size: 12px;
+  color: var(--gray-500);
+  font-weight: 600;
+  margin-top: 2px;
+}
 
 .deleteTaskBtn {
   background: transparent;
@@ -230,44 +267,52 @@
   transition: opacity 0.2s;
 }
 
-.tareaItem:hover .deleteTaskBtn { opacity: 1; }
+.tareaItem:hover .deleteTaskBtn {
+  opacity: 1;
+}
 
 /* States */
-.loadingState, .emptyState {
+.loadingState,
+.emptyState {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 100px 40px;
-  background: rgba(255,255,255,0.5);
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
   border-radius: 32px;
   text-align: center;
   gap: 20px;
-  border: 1px solid rgba(255,255,255,0.4);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid rgba(0,0,0,0.05);
+  border: 4px solid rgba(0, 0, 0, 0.05);
   border-top: 4px solid var(--gray-900);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Map Section */
 .mapSection {
-  height: 650px;
+  height: 550px;
   border-radius: 32px;
   overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
   border: 1px solid white;
 }
 
@@ -275,7 +320,7 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
@@ -289,8 +334,8 @@
   border-radius: 32px;
   width: 100%;
   max-width: 480px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .modalForm {
@@ -337,12 +382,24 @@
 
 .confirmBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 @media (max-width: 640px) {
-  .wrapper { padding: 16px; }
-  .siembrasGrid { grid-template-columns: 1fr; }
-  .modal { padding: 24px; margin: 16px; }
-  .mapSection { height: 450px; }
+  .wrapper {
+    padding: 16px;
+  }
+
+  .siembrasGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal {
+    padding: 24px;
+    margin: 16px;
+  }
+
+  .mapSection {
+    height: 450px;
+  }
 }

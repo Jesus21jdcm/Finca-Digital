@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, updateDoc, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAppContext } from '../context/AppContext';
 import styles from './Inventario.module.css';
 
 export default function Inventario() {
-  const { data } = useAppContext();
+  const { data, showAlert } = useAppContext();
   const isAdmin = data?.user?.rol === 'admin' || data?.user?.rol === 'Gerencia';
 
   const [items, setItems] = useState([]);
@@ -14,9 +14,9 @@ export default function Inventario() {
 
   // Form state
   const [nombre, setNombre] = useState('');
-  const [categoria, setCategoria] = useState('Fertilizante');
+  const [categoria, setCategoria] = useState('');
   const [cantidad, setCantidad] = useState('');
-  const [unidad, setUnidad] = useState('Litros');
+  const [unidad, setUnidad] = useState('');
   const [vencimiento, setVencimiento] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -32,7 +32,7 @@ export default function Inventario() {
         id: doc.id,
         ...doc.data()
       }));
-      
+
       // Si está vacío, agregamos unos mocks para demostración visual rápida
       if (invData.length === 0 && !loading) {
         setItems([
@@ -75,7 +75,12 @@ export default function Inventario() {
       handleCloseModal();
     } catch (error) {
       console.error("Error adding inventory item:", error);
-      alert("Hubo un error al registrar la compra.");
+      showAlert({
+        type: 'error',
+        title: 'Error de Inventario',
+        message: 'Hubo un error al intentar registrar la compra de insumos.',
+        confirmText: 'Cerrar'
+      });
     } finally {
       setSubmitting(false);
     }
@@ -99,7 +104,12 @@ export default function Inventario() {
 
     const amount = Number(consumeAmount);
     if (amount <= 0 || amount > itemToConsume.cantidad) {
-      alert("La cantidad debe ser válida y no mayor al stock disponible.");
+      showAlert({
+        type: 'warning',
+        title: 'Cantidad Inválida',
+        message: 'La cantidad debe ser mayor a cero y no puede exceder el stock disponible.',
+        confirmText: 'Corregir'
+      });
       return;
     }
 
@@ -113,7 +123,12 @@ export default function Inventario() {
       handleCloseConsumeModal();
     } catch (error) {
       console.error("Error updating inventory item:", error);
-      alert("Hubo un error al registrar la salida.");
+      showAlert({
+        type: 'error',
+        title: 'Error de Salida',
+        message: 'Hubo un error al intentar registrar la salida del insumo.',
+        confirmText: 'Cerrar'
+      });
     } finally {
       setSubmitting(false);
     }
@@ -133,7 +148,7 @@ export default function Inventario() {
           <h2 className={styles.title}>Inventario y Stock</h2>
           <p className={styles.subtitle}>Gestión de fertilizantes, pesticidas y herramientas de la finca.</p>
         </div>
-        
+
         <button className={styles.addBtn} onClick={handleOpenModal}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="12" y1="5" x2="12" y2="19" />
@@ -154,18 +169,23 @@ export default function Inventario() {
         {items.map(item => (
           <div key={item.id} className={`${styles.itemCard} ${getCategoryClass(item.categoria)}`}>
             <div className={styles.itemHeader}>
-              <h3 className={styles.itemName}>{item.nombre}</h3>
+              <h3 className={styles.itemName}>
+                {item.nombre}
+                {item.cantidad < 10 && (
+                  <span className={styles.lowStockBadge} title="Stock Crítico">⚠️</span>
+                )}
+              </h3>
               <span className={styles.itemCategory}>{item.categoria}</span>
             </div>
-            
+
             <div className={styles.stockInfo}>
               <span className={styles.stockAmount}>{item.cantidad}</span>
               <span className={styles.stockUnit}>{item.unidad}</span>
             </div>
 
             <div className={styles.itemFooter}>
-              <button 
-                className={styles.consumeBtn} 
+              <button
+                className={styles.consumeBtn}
                 onClick={() => handleOpenConsumeModal(item)}
               >
                 Registrar Salida
@@ -184,12 +204,12 @@ export default function Inventario() {
           <div className={styles.modal}>
             <h3 className={styles.modalTitle}>Registrar Ingreso de Insumo</h3>
             <form onSubmit={handleAddSubmit}>
-              
+
               <div className={styles.formGroup}>
                 <label className={styles.label}>Nombre del Insumo</label>
-                <input 
-                  type="text" 
-                  className={styles.input} 
+                <input
+                  type="text"
+                  className={styles.input}
                   placeholder="Ej. Urea 46%, Glifosato..."
                   value={nombre}
                   onChange={e => setNombre(e.target.value)}
@@ -221,9 +241,9 @@ export default function Inventario() {
               <div className={styles.formRow}>
                 <div className={styles.formGroup}>
                   <label className={styles.label}>Cantidad Ingresada</label>
-                  <input 
-                    type="number" 
-                    className={styles.input} 
+                  <input
+                    type="number"
+                    className={styles.input}
                     min="0"
                     step="0.01"
                     placeholder="0"
@@ -234,9 +254,9 @@ export default function Inventario() {
                 </div>
                 <div className={styles.formGroup}>
                   <label className={styles.label}>Fecha Vencimiento</label>
-                  <input 
-                    type="date" 
-                    className={styles.input} 
+                  <input
+                    type="date"
+                    className={styles.input}
                     value={vencimiento}
                     onChange={e => setVencimiento(e.target.value)}
                   />
@@ -267,9 +287,9 @@ export default function Inventario() {
             <form onSubmit={handleConsumeSubmit}>
               <div className={styles.formGroup}>
                 <label className={styles.label}>Cantidad a retirar ({itemToConsume.unidad})</label>
-                <input 
-                  type="number" 
-                  className={styles.input} 
+                <input
+                  type="number"
+                  className={styles.input}
                   min="0.01"
                   step="0.01"
                   max={itemToConsume.cantidad}

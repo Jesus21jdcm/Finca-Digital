@@ -152,6 +152,58 @@
   pointer-events: none;
 }
 
+.requirementInfo {
+  background: linear-gradient(135deg, var(--teal-pale), #f0faf8);
+  border: 1px dashed var(--teal-light);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-top: -10px;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.requirementInfo p {
+  margin: 0;
+  color: var(--teal-dark);
+  font-size: 15px;
+}
+
+.requirementInfo small {
+  display: block;
+  margin-top: 4px;
+  color: var(--gray-600);
+  font-size: 12px;
+  font-style: italic;
+}
+
+.stockAlert {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--teal-pale);
+  color: #991b1b;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.adjustBtn {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: all 0.2s;
+}
+
+.adjustBtn:hover {
+  background: #fee2e2;
+  transform: scale(1.05);
+}
+
 /* ── Preview Timeline ── */
 .preview {
   background: white;

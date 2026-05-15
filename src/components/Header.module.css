@@ -1,7 +1,8 @@
 .header {
   height: var(--header-height);
-  background-color: var(--white);
-  border-bottom: 1px solid var(--gray-100);
+  background-color: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,14 +49,14 @@
 .brandName {
   font-size: 20px;
   font-weight: 800;
-  color: #3f6212;
+  color: var(--teal);
   letter-spacing: -0.02em;
 }
 
 .divider {
   width: 1px;
   height: 24px;
-  background-color: var(--gray-200);
+  background-color: var(--border-color);
 }
 
 .brandSub {
@@ -66,13 +67,13 @@
 .mainTitle {
   font-size: 16px;
   font-weight: 700;
-  color: var(--gray-900);
+  color: var(--text-primary);
 }
 
 .subTitle {
   font-size: 12px;
   font-weight: 500;
-  color: var(--gray-500);
+  color: var(--text-secondary);
 }
 
 .right {
@@ -91,11 +92,31 @@
   border-radius: var(--radius-xl);
   font-size: 14px;
   font-weight: 700;
-  border: 1.5px solid var(--gray-800);
-  color: var(--gray-800);
-  background: white;
+  border: 1.5px solid var(--text-primary);
+  color: var(--text-primary);
+  background: transparent;
   transition: var(--transition);
   white-space: nowrap;
+}
+
+.themeToggle {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.2rem;
+}
+
+.themeToggle:hover {
+  transform: scale(1.1);
+  background: var(--teal-light);
 }
 
 .userProfile {
@@ -127,13 +148,13 @@
 .userName {
   font-size: 14px;
   font-weight: 800;
-  color: var(--gray-900);
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .userEmail {
   font-size: 11px;
-  color: var(--gray-500);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 

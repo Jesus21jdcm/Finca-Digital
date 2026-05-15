@@ -4,14 +4,14 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyCEaEX4e7DIaK_qRUp2ovzl8nkeWOVfWgQ",
-  authDomain: "finca-digital-51f2f.firebaseapp.com",
-  databaseURL: "https://finca-digital-51f2f-default-rtdb.firebaseio.com",
-  projectId: "finca-digital-51f2f",
-  storageBucket: "finca-digital-51f2f.firebasestorage.app",
-  messagingSenderId: "920614478954",
-  appId: "1:920614478954:web:dce766c98375133b425613",
-  measurementId: "G-NDZ4B6TVST"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

@@ -12,7 +12,7 @@ const STATUS_OPTIONS = [
 ];
 
 export default function MonitoreoCampo() {
-  const { data } = useAppContext();
+  const { data, showAlert, hideAlert } = useAppContext();
   const isAdmin = data?.user?.rol === 'admin' || data?.user?.rol === 'Gerencia';
   const [activeTab, setActiveTab] = useState('registro'); // 'registro' | 'historial'
   
@@ -85,7 +85,12 @@ export default function MonitoreoCampo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!loteId || !estado || !foto) {
-      alert("Por favor selecciona el lote, el estado y sube una foto de evidencia.");
+      showAlert({
+        type: 'warning',
+        title: 'Datos incompletos',
+        message: 'Por favor selecciona el lote, el estado y sube una foto de evidencia.',
+        confirmText: 'Entendido'
+      });
       return;
     }
 
@@ -144,20 +149,40 @@ export default function MonitoreoCampo() {
 
     } catch (error) {
       console.error("Error al guardar monitoreo:", error);
-      alert("Hubo un error al guardar el registro.");
+      showAlert({
+        type: 'error',
+        title: 'Error de Guardado',
+        message: 'Hubo un error al intentar guardar el registro fotográfico.',
+        confirmText: 'Cerrar'
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("¿Estás seguro que deseas marcar este reporte como solucionado y eliminarlo?")) {
-      try {
-        await deleteDoc(doc(db, 'monitoreos', id));
-      } catch (error) {
-        console.error("Error al eliminar:", error);
+    showAlert({
+      type: 'confirm',
+      title: 'Marcar como Solucionado',
+      message: '¿Estás seguro que deseas marcar este reporte como solucionado y eliminarlo del historial?',
+      confirmText: 'Sí, Solucionado',
+      cancelText: 'Cancelar',
+      onConfirm: async () => {
+        hideAlert();
+        try {
+          await deleteDoc(doc(db, 'monitoreos', id));
+          showAlert({
+            type: 'success',
+            title: 'Reporte Solucionado',
+            message: 'El monitoreo ha sido archivado exitosamente.',
+            confirmText: 'Ok'
+          });
+        } catch (error) {
+          console.error("Error al eliminar:", error);
+          showAlert({ type: 'error', title: 'Error', message: 'No se pudo eliminar el reporte.' });
+        }
       }
-    }
+    });
   };
 
   const handleMarcarVisto = async (id) => {

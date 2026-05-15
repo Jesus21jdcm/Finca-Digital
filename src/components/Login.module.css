@@ -4,7 +4,7 @@
   justify-content: center;
   min-height: 100vh;
   width: 100vw;
-  background-color: var(--cream);
+  background: linear-gradient(135deg, #f0fdf4 0%, #e8f5f2 50%, #fef9ee 100%);
   position: relative;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
@@ -16,7 +16,7 @@
   left: -10vw;
   width: 60vw;
   height: 60vw;
-  background: radial-gradient(circle, rgba(42, 125, 111, 0.15) 0%, rgba(42, 125, 111, 0) 70%);
+  background: radial-gradient(circle, rgba(42, 125, 111, 0.1) 0%, rgba(42, 125, 111, 0) 70%);
   border-radius: 50%;
   z-index: 0;
 }
@@ -27,21 +27,21 @@
   right: -10vw;
   width: 70vw;
   height: 70vw;
-  background: radial-gradient(circle, rgba(200, 134, 10, 0.1) 0%, rgba(200, 134, 10, 0) 70%);
+  background: radial-gradient(circle, rgba(200, 134, 10, 0.05) 0%, rgba(200, 134, 10, 0) 70%);
   border-radius: 50%;
   z-index: 0;
 }
 
 .loginCard {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(25px);
   padding: 48px;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 32px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.05);
   width: 100%;
   max-width: 440px;
   z-index: 1;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .brand {
@@ -92,14 +92,25 @@
 }
 
 .errorMessage {
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
   padding: 12px;
   border-radius: var(--radius-sm);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   text-align: center;
-  border: 1px solid #fecaca;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.successMessage {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
 .inputGroup {
@@ -142,11 +153,29 @@
 .input:focus {
   outline: none;
   border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(42, 125, 111, 0.15);
+  box-shadow: 0 0 0 4px rgba(42, 125, 111, 0.2);
 }
 
-.input::placeholder {
-  color: var(--gray-400);
+.forgotPassRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -12px;
+}
+
+.forgotBtn {
+  background: none;
+  border: none;
+  color: var(--teal);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: var(--transition);
+}
+
+.forgotBtn:hover {
+  color: var(--teal-dark);
+  text-decoration: underline;
 }
 
 .submitBtn {
@@ -169,6 +198,56 @@
   box-shadow: 0 6px 16px rgba(42, 125, 111, 0.35);
 }
 
+.submitBtn:hover {
+  background-color: #154d49;
+  transform: translateY(-2px);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 20px 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.divider span {
+  padding: 0 10px;
+}
+
+.googleBtn {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.googleBtn img {
+  width: 20px;
+  height: 20px;
+}
+
+.googleBtn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
 .submitBtn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
@@ -176,6 +255,7 @@
 
 .footer {
   margin-top: 32px;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -187,19 +267,5 @@
 .footerText {
   font-size: 13px;
   color: var(--gray-500);
-}
-
-.switchBtn {
-  background: none;
-  border: none;
-  color: var(--teal);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  padding: 0;
-}
-
-.switchBtn:hover {
-  color: var(--teal-dark);
-  text-decoration: underline;
+  font-weight: 500;
 }

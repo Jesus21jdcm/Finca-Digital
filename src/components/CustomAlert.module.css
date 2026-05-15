@@ -1,0 +1,180 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal::after {
+  content: '✓';
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 20px;
+  color: var(--teal, #2a7d6f);
+  opacity: 0.1;
+  font-family: system-ui;
+  font-weight: 300;
+}
+
+.iconWrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  position: relative;
+}
+
+.svgIcon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.svgIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.cornerBadge {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 32px;
+  height: 32px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  border: 2px solid currentColor;
+  animation: badgePop 0.4s 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes badgePop {
+  from { opacity: 0; transform: scale(0); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.successIcon {
+  background: #f0fdf4;
+  color: #22c55e;
+}
+
+.errorIcon {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.confirmIcon {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.warningIcon {
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.message {
+  font-size: 1rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.confirmBtn {
+  background: var(--teal, #2a7d6f);
+  color: white;
+  flex: 1;
+}
+
+.confirmBtn:hover {
+  background: #206256;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(42, 125, 111, 0.3);
+}
+
+.cancelBtn {
+  background: #f1f5f9;
+  color: #64748b;
+  flex: 1;
+}
+
+.cancelBtn:hover {
+  background: #e2e8f0;
+}
+
+.deleteBtn {
+  background: #ef4444;
+  color: white;
+  flex: 1;
+}
+
+.deleteBtn:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}

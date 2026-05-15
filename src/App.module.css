@@ -23,3 +23,116 @@
     padding-bottom: 100px;
   }
 }
+
+/* Tractor Loading Animation */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f3f4f6;
+  color: #5c8a34;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.tractorWrapper {
+  position: relative;
+  width: 120px;
+  height: 80px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.tractorIcon {
+  width: 64px;
+  height: 64px;
+  color: #5c8a34;
+  animation: bounce 0.4s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+.dirtPath {
+  position: absolute;
+  bottom: 0;
+  width: 140px;
+  height: 4px;
+  background-color: #8B4513;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dirtPath::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: repeating-linear-gradient(90deg,
+      #8B4513,
+      #8B4513 10px,
+      #A0522D 10px,
+      #A0522D 20px);
+  animation: moveGround 1s linear infinite;
+}
+
+.clod {
+  position: absolute;
+  bottom: 4px;
+  left: 30px;
+  width: 6px;
+  height: 6px;
+  background-color: #8B4513;
+  border-radius: 50%;
+  animation: fly 0.8s linear infinite;
+  z-index: 1;
+}
+
+.loadingTitle {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 4px 0;
+  color: #374151;
+}
+
+.loadingSub {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0;
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  100% {
+    transform: translateY(-4px) rotate(-2deg);
+  }
+}
+
+@keyframes moveGround {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes fly {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-40px, -20px) scale(0);
+    opacity: 0;
+  }
+}

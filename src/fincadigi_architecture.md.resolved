@@ -1,0 +1,117 @@
+# Arquitectura de Flujo — Finca Digital
+
+Este diagrama representa el flujo completo de datos y decisiones del sistema, desde el login hasta las automatizaciones en la nube.
+
+---
+
+```mermaid
+graph TD
+    %% ─────────────────────────────────────
+    %%   AUTENTICACIÓN
+    %% ─────────────────────────────────────
+    Start(["🌿 Inicio"]) --> Login{{"🔐 ¿Usuario\nAutenticado?"}}
+    Login -- "No" --> LoginPage["📱 Pantalla de Login\n(Firebase Auth)"]
+    LoginPage -- "Credenciales correctas" --> Dashboard
+    Login -- "Sí" --> Dashboard
+
+    Dashboard["🖥️ Panel Principal\n(React + Vite)"]
+
+    %% ─────────────────────────────────────
+    %%   MÓDULOS PRINCIPALES
+    %% ─────────────────────────────────────
+    Dashboard --> Inv["📦 Gestión de\nInventario"]
+    Dashboard --> Lotes["🌱 Gestión de\nCultivos & Lotes"]
+    Dashboard --> Monitoreo["📸 Monitoreo\nen Campo"]
+    Dashboard --> Alertas["🔔 Dashboard\nde Alertas"]
+
+    %% ─────────────────────────────────────
+    %%   INVENTARIO
+    %% ─────────────────────────────────────
+    Inv --> Compra["🛒 Registrar Compra\nde Insumos"]
+    Compra --> DB_Inv[("🗄️ Firestore\nInventario")]
+    DB_Inv --> StockActual["📊 Stock Actualizado\nen Tiempo Real"]
+
+    %% ─────────────────────────────────────
+    %%   LOTES & CULTIVOS
+    %% ─────────────────────────────────────
+    Lotes --> RegistroLote["📍 Registrar Lote\nCacao / Plátano / Maíz / Yuca"]
+    RegistroLote --> DB_Lotes[("🗄️ Firestore\nCrops / Lotes")]
+    Lotes --> Mapa["🗺️ Mapa Interactivo\n(Leaflet + Geoman)"]
+    Mapa --> DB_Lotes
+
+    %% ─────────────────────────────────────
+    %%   APLICACIÓN DE INSUMOS
+    %% ─────────────────────────────────────
+    Lotes --> Aplicar["💊 Aplicar Insumo\na un Lote"]
+    Aplicar --> CheckStock{{"📋 ¿Hay Stock\nSuficiente?"}}
+
+    CheckStock -- "❌ No" --> Error["🚨 Aviso UI:\nStock Insuficiente"]
+    CheckStock -- "✅ Sí" --> Proceso["⚙️ Resta Stock Inv.\n+ Registra en Lote"]
+
+    %% ─────────────────────────────────────
+    %%   CONSULTA DE CLIMA
+    %% ─────────────────────────────────────
+    Proceso --> ClimaAPI{{"🌦️ Consulta\nAPI de Clima"}}
+    ClimaAPI -- "🌧️ Lluvia Inminente" --> AlertaClima["📲 WhatsApp:\n'No aplicar hoy,\nlloverá'"]
+    ClimaAPI -- "☀️ Despejado" --> Confirmar["✅ Registro Exitoso\nen Firestore"]
+
+    %% ─────────────────────────────────────
+    %%   MONITOREO EN CAMPO
+    %% ─────────────────────────────────────
+    Monitoreo --> Foto["📷 Foto-Control\n(Evidencia)"]
+    Foto --> DB_Mon[("🗄️ Firestore\nMonitoreos")]
+    DB_Mon --> HistorialFotos["🖼️ Historial\nFotográfico"]
+
+    %% ─────────────────────────────────────
+    %%   ALERTAS
+    %% ─────────────────────────────────────
+    Alertas --> CheckAlertas{{"📅 Revisar\nCalendario de Tareas"}}
+    CheckAlertas -- "Toca Abonar" --> NotifWA_U["📲 Alerta WhatsApp\nal Encargado"]
+    CheckAlertas -- "Stock Bajo" --> NotifWA_U
+    CheckAlertas -- "Sin novedad" --> SinAlerta["✅ Sin Alertas\nPendientes"]
+
+    %% ─────────────────────────────────────
+    %%   AUTOMATIZACIÓN (FIREBASE / CRON)
+    %% ─────────────────────────────────────
+    subgraph Firebase_Automations ["☁️ Automatización Programada (Cloud / Backend)"]
+        direction TB
+        Cron["⏰ Cron Job\nCada mañana 7:00 AM"] --> CheckFechas{{"🗓️ Revisar Calendario\nde Lotes en Firestore"}}
+        CheckFechas -- "Fecha de Abono" --> API_WA["📲 Enviar Alerta\nWhatsApp (WA API)"]
+        CheckFechas -- "Stock Crítico" --> API_WA
+        CheckFechas -- "Sin eventos" --> NadaQHacer["💤 Sin Notificaciones"]
+    end
+
+    DB_Lotes -.->|"Consulta periódica"| Cron
+    DB_Inv -.->|"Consulta periódica"| Cron
+
+    %% ─────────────────────────────────────
+    %%   FIN
+    %% ─────────────────────────────────────
+    Confirmar --> End(["🏁 Fin"])
+    AlertaClima --> End
+    API_WA --> End
+    Error --> End
+```
+
+---
+
+## Resumen de Módulos Implementados
+
+| Módulo | Estado | Tecnología |
+|---|---|---|
+| 🔐 Autenticación | ✅ Activo | Firebase Auth |
+| 🖥️ Panel Principal | ✅ Activo | React + Vite |
+| 📦 Gestión de Inventario | ✅ Activo | Firestore |
+| 🌱 Gestión de Cultivos | ✅ Activo | Firestore |
+| 🗺️ Mapa Interactivo | ✅ Activo | Leaflet + Geoman + Turf.js |
+| 📸 Monitoreo en Campo | ✅ Activo | Firestore Storage |
+| 🔔 Dashboard de Alertas | ✅ Activo | Firestore + React |
+| 📲 WhatsApp Alertas (manual) | ✅ Activo | WA Web / Links |
+| ⏰ Cron Automatizado | 🔧 Pendiente | Firebase Cloud Functions |
+| 🌦️ Integración API Clima | 🔧 Pendiente | OpenWeatherMap API |
+
+> [!NOTE]
+> Los módulos marcados como 🔧 **Pendiente** son los próximos pasos recomendados para completar el flujo de automatización de la plataforma.
+
+> [!TIP]
+> Para el Cron automatizado, la solución más directa con Firebase es usar **Cloud Functions** con `onSchedule()` de `firebase-functions/v2/scheduler`, que permite ejecutar código cada mañana a las 7:00 AM sin necesidad de un servidor propio.

@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { doc, onSnapshot, setDoc, updateDoc, collection, query, where } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc, updateDoc, collection, query, where, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
+import CustomAlert from '../components/CustomAlert';
+import { CROP_CATALOG, normalizeCropKey } from '../constants/crops';
+import { calculateCropProgress } from '../utils/dateUtils';
 
 const AppContext = createContext();
 
@@ -12,24 +15,35 @@ const INITIAL_DATA = {
     estado: 'Activo'
   },
   stats: {
-    'cultivos-activos': { count: 4 },
-    'inventario': { count: 12 },
-    'reportes': { count: 8 },
+    'cultivos-activos': { count: 0 },
+    'inventario': { count: 0 },
+    'reportes': { count: 0 },
   },
-  cultivos: {
-    maiz: { campos: 2, hectareas: '1.2 ha totales', count: 2, data: [2, 3, 2.5, 4, 3.5, 5, 4.5, 6] },
-    cacao: { campos: 1, hectareas: '1.8 ha totales', count: 1, data: [1, 1, 2, 3, 3, 3, 4, 4] },
-    yuca: { campos: 0, hectareas: 'Sin siembra', count: 0, data: [1, 2, 1, 3, 1, 2, 1, 1] },
-    platano: { campos: 0, hectareas: 'Sin siembra', count: 1, data: [0, 0, 0, 1, 0, 0, 1, 1] },
-  },
-  fertilizations: [],
-  weather: null, // Will hold weather data
-  activeCrops: [] // To store all active crops with coordinates
+  cultivos: {},
+  activeCrops: [],
+  inventoryItems: [],
+  weather: null,
 };
 
 export function AppProvider({ children, currentUser }) {
   const [data, setData] = useState(INITIAL_DATA);
   const [loading, setLoading] = useState(true);
+  const [alertConfig, setAlertConfig] = useState(null);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  const showAlert = (config) => setAlertConfig(config);
+  const hideAlert = () => setAlertConfig(null);
 
   // Sync real user info into data
   useEffect(() => {
@@ -47,92 +61,134 @@ export function AppProvider({ children, currentUser }) {
   }, [currentUser]);
 
   useEffect(() => {
+    // 1. Dashboard Main Data (Stats)
     const docRef = doc(db, 'dashboard', 'mainData');
-
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+    const unsubscribeMain = onSnapshot(docRef, (docSnap) => {
       if (docSnap.exists()) {
         const firestoreData = docSnap.data();
         setData(prev => ({
           ...prev,
           ...firestoreData,
-          // Preservar los datos reales calculados de la otra suscripción
-          cultivos: prev.cultivos,
           stats: {
             ...firestoreData.stats,
-            'cultivos-activos': prev.stats['cultivos-activos']
+            'cultivos-activos': prev.stats['cultivos-activos'],
+            'inventario': prev.stats['inventario']
           }
         }));
       } else {
         setDoc(docRef, INITIAL_DATA);
       }
-      setLoading(false);
-    }, (error) => {
-      console.error("Firestore sync error:", error);
-      setLoading(false);
     });
 
-    // ── Suscribirse a los cultivos reales para el Dashboard ──
+    // 2. Active Crops Subscription
     const qCrops = query(collection(db, 'crops'), where('estado', '==', 'activo'));
-    const unsubCrops = onSnapshot(qCrops, (snap) => {
-      const activeCropsCount = snap.size;
+    const unsubscribeCrops = onSnapshot(qCrops, (snap) => {
+      const activeCrops = [];
+      const statsPorRubro = {};
 
-      // Base para sumarizar
-      const cultivosReales = {
-        maiz: { campos: 0, hectareasNum: 0, count: 0, data: [2, 3, 2.5, 4, 3.5, 5, 4.5, 6] },
-        cacao: { campos: 0, hectareasNum: 0, count: 0, data: [1, 1, 2, 3, 3, 3, 4, 4] },
-        yuca: { campos: 0, hectareasNum: 0, count: 0, data: [1, 2, 1, 3, 1, 2, 1, 1] },
-        platano: { campos: 0, hectareasNum: 0, count: 0, data: [0, 0, 0, 1, 0, 0, 1, 1] },
-      };
-
-      const allActiveCrops = [];
-
-      snap.forEach(d => {
-        const crop = d.data();
-        allActiveCrops.push({ id: d.id, ...crop });
-
-        // Normalizar clave (Maíz -> maiz, Plátano -> platano)
-        const key = crop.rubro.toLowerCase()
-          .replace('á', 'a').replace('í', 'i').replace('ó', 'o').replace('ú', 'u');
-
-        if (cultivosReales[key]) {
-          cultivosReales[key].campos += 1;
-          cultivosReales[key].count += 1;
-          cultivosReales[key].hectareasNum += Number(crop.hectareas) || 0;
-        }
+      // Initialize stats with catalog defaults
+      CROP_CATALOG.forEach(c => {
+        statsPorRubro[normalizeCropKey(c.key)] = {
+          campos: 0,
+          hectareas: 0,
+          count: 0,
+          data: [2, 3, 2.5, 4, 3.5, 5, 4.5, 6] // Sparkline mock data
+        };
       });
 
-      // Formatear texto de hectáreas
-      Object.keys(cultivosReales).forEach(k => {
-        if (cultivosReales[k].campos > 0) {
-          cultivosReales[k].hectareas = `${cultivosReales[k].hectareasNum.toFixed(1)} ha totales`;
-        } else {
-          cultivosReales[k].hectareas = 'Sin siembra';
+      snap.forEach(d => {
+        const cropData = { id: d.id, ...d.data() };
+        const { diasTranscurridos, progreso } = calculateCropProgress(cropData.fechaSiembra, cropData.duracionDias);
+
+        const processedCrop = {
+          ...cropData,
+          _diasTranscurridos: diasTranscurridos,
+          _progreso: progreso,
+          _tareasPendientes: (Array.isArray(cropData.tareas) ? cropData.tareas : []).filter(t => !t.completada).length
+        };
+
+        activeCrops.push(processedCrop);
+
+        const key = normalizeCropKey(processedCrop.rubro);
+        if (statsPorRubro[key]) {
+          statsPorRubro[key].campos += 1;
+          statsPorRubro[key].count += 1;
+          statsPorRubro[key].hectareas += Number(processedCrop.hectareas) || 0;
         }
-        delete cultivosReales[k].hectareasNum;
       });
 
       setData(prev => ({
         ...prev,
+        activeCrops,
+        cultivos: statsPorRubro,
         stats: {
           ...prev.stats,
-          'cultivos-activos': { count: activeCropsCount }
-        },
-        cultivos: cultivosReales,
-        activeCrops: allActiveCrops
+          'cultivos-activos': { count: snap.size }
+        }
+      }));
+      setLoading(false);
+    });
+
+    // 3. Inventory Subscription
+    const qInv = query(collection(db, 'inventario'), orderBy('nombre', 'asc'));
+    const unsubscribeInv = onSnapshot(qInv, (snap) => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      setData(prev => ({
+        ...prev,
+        inventoryItems: items,
+        stats: {
+          ...prev.stats,
+          inventario: { count: items.length }
+        }
       }));
     });
 
-    return () => { unsubscribe(); unsubCrops(); };
+    return () => {
+      unsubscribeMain();
+      unsubscribeCrops();
+      unsubscribeInv();
+    };
+  }, []);
+
+  // 4. Weather Sync
+  useEffect(() => {
+    const fetchWeather = async () => {
+      const API_KEY = import.meta.env.VITE_OPENWEATHER_KEY || 'c403306634455f5e8a6a68f051e94411'; 
+      const lat = 8.6226;
+      const lon = -70.2045;
+      
+      try {
+        const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`);
+        if (!response.ok) throw new Error('Weather API error');
+        const weatherData = await response.json();
+        
+        setData(prev => ({
+          ...prev,
+          weather: {
+            temp: Math.round(weatherData.main.temp),
+            condition: weatherData.weather[0].description,
+            icon: weatherData.weather[0].icon,
+            humidity: weatherData.main.humidity,
+            pop: weatherData.clouds.all, 
+            city: weatherData.name
+          }
+        }));
+      } catch (err) {
+        console.error("Weather Fetch Error:", err);
+        setData(prev => ({
+          ...prev,
+          weather: { temp: 29, condition: 'Parcialmente nublado', icon: '02d', humidity: 60, pop: 10, city: 'Barinas' }
+        }));
+      }
+    };
+
+    fetchWeather();
+    const interval = setInterval(fetchWeather, 1800000); 
+    return () => clearInterval(interval);
   }, []);
 
   const addFertilizationLog = async (log) => {
     const newLogs = [...(data.fertilizations || []), { ...log, id: Date.now().toString(), date: new Date().toLocaleDateString() }];
-
-    setData(prev => ({
-      ...prev,
-      fertilizations: newLogs
-    }));
-
     try {
       const docRef = doc(db, 'dashboard', 'mainData');
       await updateDoc(docRef, { fertilizations: newLogs });
@@ -141,50 +197,38 @@ export function AppProvider({ children, currentUser }) {
     }
   };
 
-  const updateCrop = async (cropId, updatedFields) => {
-    // Optimistic UI update
-    setData(prev => ({
-      ...prev,
-      cultivos: {
-        ...prev.cultivos,
-        [cropId]: { ...prev.cultivos[cropId], ...updatedFields }
-      }
-    }));
-
-    // Firestore update
-    try {
-      const docRef = doc(db, 'dashboard', 'mainData');
-      await updateDoc(docRef, {
-        [`cultivos.${cropId}`]: { ...data.cultivos[cropId], ...updatedFields }
-      });
-    } catch (err) {
-      console.error("Error updating crop:", err);
-    }
-  };
-
   const updateInventoryStat = async (amount) => {
     const currentInv = data.stats.inventario.count;
-    setData(prev => ({
-      ...prev,
-      stats: {
-        ...prev.stats,
-        inventario: { count: currentInv + amount }
-      }
-    }));
-
     try {
       const docRef = doc(db, 'dashboard', 'mainData');
-      await updateDoc(docRef, {
-        'stats.inventario.count': currentInv + amount
-      });
+      await updateDoc(docRef, { 'stats.inventario.count': currentInv + amount });
     } catch (err) {
       console.error("Error updating inventory stat:", err);
     }
   };
 
   return (
-    <AppContext.Provider value={{ data, loading, updateCrop, updateInventoryStat, addFertilizationLog }}>
+    <AppContext.Provider value={{
+      data,
+      loading,
+      updateInventoryStat,
+      addFertilizationLog,
+      showAlert,
+      hideAlert,
+      theme,
+      toggleTheme
+    }}>
       {children}
+      {alertConfig && (
+        <CustomAlert
+          {...alertConfig}
+          onCancel={hideAlert}
+          onConfirm={() => {
+            if (alertConfig.onConfirm) alertConfig.onConfirm();
+            else hideAlert();
+          }}
+        />
+      )}
     </AppContext.Provider>
   );
 }

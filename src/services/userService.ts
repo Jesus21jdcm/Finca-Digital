@@ -1,4 +1,4 @@
-import { collection, query, getDocs, doc, updateDoc, setDoc } from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { db, firebaseConfig } from '../firebase';
@@ -58,4 +58,12 @@ export const createNewUser = async (email: string, password: string, role: UserR
   await secondaryAuth.signOut();
   
   return newUserProfile;
+};
+
+/**
+ * Eliminar un usuario de Firestore
+ */
+export const deleteUser = async (userId: string): Promise<void> => {
+  const userRef = doc(db, 'users', userId);
+  await deleteDoc(userRef);
 };

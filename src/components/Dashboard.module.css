@@ -1,8 +1,9 @@
 .dashboard {
   padding: 32px;
   background-color: #f3f4f6;
-  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  height: 850px; /* <--- Medida exacta fija */
   width: 100%;
+  overflow: hidden; /* <--- Bloquea el scroll por completo */
 }
 
 .mainGrid {
@@ -105,24 +106,26 @@
 }
 
 .cropCard {
-  padding: 20px;
+  padding: 16px;
 }
 
 .cropTop {
   display: flex;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
   gap: 16px;
 }
 
 .cropIcon {
-  width: 56px;
-  height: 56px;
-  background-color: #f9fafb;
+  width: 80px;
+  height: 80px;
+  background-color: transparent;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 0;
   flex-shrink: 0;
 }
 
@@ -139,8 +142,9 @@
 
 .cropTitleRow {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
   margin-bottom: 4px;
 }
 
@@ -481,8 +485,8 @@
   }
 
   .cropIcon {
-    width: 48px;
-    height: 48px;
+    width: 100%;
+    height: 180px;
   }
 
   .cropTitleRow {

@@ -46,12 +46,12 @@ export default function HarvestLog() {
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
-    
+
     // Header
     doc.setFontSize(22);
     doc.setTextColor(26, 95, 90); // Teal Dark
     doc.text('Reporte Semanal - Finca Digital', 14, 22);
-    
+
     doc.setFontSize(11);
     doc.setTextColor(100, 100, 100);
     doc.text(`Fecha de Emisión: ${new Date().toLocaleDateString('es-VE')}`, 14, 32);
@@ -65,7 +65,7 @@ export default function HarvestLog() {
     doc.setFontSize(14);
     doc.setTextColor(40, 40, 40);
     doc.text('1. Siembras Activas en la Finca:', 14, finalY);
-    
+
     if (ciclosActivos.length > 0) {
       autoTable(doc, {
         startY: finalY + 5,
@@ -120,7 +120,7 @@ export default function HarvestLog() {
       doc.setFontSize(14);
       doc.setTextColor(40, 40, 40);
       doc.text('3. Registro de Fertilización Aplicada:', 14, finalY);
-      
+
       autoTable(doc, {
         startY: finalY + 5,
         headStyles: { fillColor: [107, 76, 42] }, // Brown
@@ -137,7 +137,7 @@ export default function HarvestLog() {
 
     // Footer
     const pageCount = doc.internal.getNumberOfPages();
-    for(let i = 1; i <= pageCount; i++) {
+    for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFontSize(9);
       doc.setTextColor(150);
@@ -171,7 +171,7 @@ export default function HarvestLog() {
         <h2 className={styles.sectionTitle}>
           <span style={{ fontSize: '24px' }}>🌱</span> Siembras Activas en Campo
         </h2>
-        
+
         {ciclosActivos.length === 0 ? (
           <p className={styles.emptyText}>No hay siembras activas en este momento.</p>
         ) : (
