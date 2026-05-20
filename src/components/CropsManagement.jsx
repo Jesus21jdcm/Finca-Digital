@@ -3,7 +3,7 @@ import { doc, deleteDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useAppContext } from '../context/AppContext';
 import NuevaSiembra from './NuevaSiembra';
-import { CROP_CATALOG } from '../constants/crops';
+import { CROP_CATALOG } from '../server/constants/crops';
 import { safeToDate, formatDate } from '../utils/dateUtils';
 
 import styles from './CropsManagement.module.css';

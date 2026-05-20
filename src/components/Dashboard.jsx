@@ -47,20 +47,7 @@ export default function Dashboard() {
         {/* Columna Izquierda */}
         <div className={styles.columnLeft}>
           {/* Perfil */}
-          <div className={styles.profileCard}>
-            <div className={styles.profileAvatarLarge}>
-              <img src={`https://ui-avatars.com/api/?name=${user.nombre}&background=10b981&color=fff&size=128`} alt="Avatar" />
-            </div>
-            <div className={styles.profileInfo}>
-              <h2 className={styles.profileName}>{user.nombre} <span className={styles.profileRole}>| {user.rol}</span></h2>
-              <span className={styles.profileStatus}>Activo</span>
-              <div className={styles.profileMeta}>
-                <p>{user.email}</p>
-                <p>Sede Principal, Barinas</p>
-                <p>Último acceso: Hoy</p>
-              </div>
-            </div>
-          </div>
+
 
           {/* Resumen de Cultivos */}
           <div className={styles.sectionHeader}>
@@ -72,10 +59,10 @@ export default function Dashboard() {
               <div key={key} className={styles.cropCard}>
                 <div className={styles.cropTop}>
                   <div className={styles.cropIcon}>
-                    <img 
-                      src={`/${key}.png`} 
-                      alt={key} 
-                      onError={(e) => { e.target.onerror = null; e.target.src = '/flowerpot_icon.svg'; }} 
+                    <img
+                      src={`/${key}.png`}
+                      alt={key}
+                      onError={(e) => { e.target.onerror = null; e.target.src = '/flowerpot_icon.svg'; }}
                     />
                   </div>
                   <div className={styles.cropHeader}>
@@ -172,8 +159,8 @@ export default function Dashboard() {
                   ))}
                 </ul>
                 <p className={styles.tasksFooter}>
-                  {data.activeCrops.some(c => c._tareasPendientes > 0) 
-                    ? "Tienes labores pendientes por completar." 
+                  {data.activeCrops.some(c => c._tareasPendientes > 0)
+                    ? "Tienes labores pendientes por completar."
                     : "No hay labores pendientes. ¡Todo al día!"}
                 </p>
               </div>

@@ -1,9 +1,9 @@
 .dashboard {
   padding: 32px;
   background-color: #f3f4f6;
-  height: 850px; /* <--- Medida exacta fija */
-  width: 100%;
-  overflow: hidden; /* <--- Bloquea el scroll por completo */
+  height: 85vh;
+  width: 50%;
+  margin: 0 auto;
 }
 
 .mainGrid {

@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { doc, onSnapshot, setDoc, updateDoc, collection, query, where, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
 import CustomAlert from '../components/CustomAlert';
-import { CROP_CATALOG, normalizeCropKey } from '../constants/crops';
+import { CROP_CATALOG, normalizeCropKey } from '../server/constants/crops';
 import { calculateCropProgress } from '../utils/dateUtils';
 
 const AppContext = createContext();

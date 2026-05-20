@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { collection, addDoc, Timestamp, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
 import { useAppContext } from '../context/AppContext';
-import { CROP_CATALOG, getCropMetadata } from '../constants/crops';
+import { CROP_CATALOG, getCropMetadata } from '../server/constants/crops';
 import { addDays, formatDate } from '../utils/dateUtils';
 import styles from './NuevaSiembra.module.css';
 
@@ -30,63 +28,70 @@ export default function NuevaSiembra({ onSiembraCreada }) {
     setEstado({ tipo: 'cargando', mensaje: 'Verificando inventario y registrando...' });
 
     try {
-      const hectareasNum = Number(form.hectareas);
-      const meta = getCropMetadata(form.rubro);
-      const semillasNecesarias = meta.densidad * hectareasNum;
-      
-      const itemSemilla = inventario.find(i => 
-        i.nombre.toLowerCase().includes(form.rubro.toLowerCase())
-      );
-
-      if (!itemSemilla || itemSemilla.cantidad < semillasNecesarias) {
-        throw new Error(`Stock insuficiente. Necesitas ${semillasNecesarias.toLocaleString()} ${meta.unidad} de ${form.rubro} para ${hectareasNum} ha. Disponible: ${itemSemilla?.cantidad || 0} ${itemSemilla?.unidad || ''}`);
-      }
-
-      const start = new Date(form.fechaSiembra + 'T12:00:00'); 
-      
-      const tareasProgramadas = meta.tareasDefault.map(t => ({
-        nombre: t.nombre,
-        dia: t.dia,
-        fechaEjecucion: Timestamp.fromDate(addDays(start, t.dia)),
-        completada: false
-      }));
-
-      const dFin = addDays(start, meta.duracion);
-
-      const nuevaSiembra = {
-        rubro: form.rubro,
-        lote: form.lote,
-        hectareas: hectareasNum,
-        fechaSiembra: Timestamp.fromDate(start),
-        fechaFinalizacion: Timestamp.fromDate(dFin),
-        duracionDias: meta.duracion,
-        estado: 'activo',
-        tareas: tareasProgramadas,
-        createdAt: Timestamp.now()
-      };
-
-      const itemRef = doc(db, 'inventario', itemSemilla.id);
-      await updateDoc(itemRef, {
-        cantidad: itemSemilla.cantidad - semillasNecesarias,
-        ultimaSalida: serverTimestamp()
+      const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+      const response = await fetch(`${API_URL}/api/nueva-siembra`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rubro: form.rubro,
+          hectareas: Number(form.hectareas),
+          lote: form.lote,
+          fechaSiembra: form.fechaSiembra,
+        }),
       });
 
-      const docRef = await addDoc(collection(db, 'crops'), nuevaSiembra);
+      const resData = await response.json();
+      if (!response.ok) {
+        throw new Error(resData.error || 'Error desconocido al registrar la siembra');
+      }
 
       setEstado({
         tipo: 'exito',
-        mensaje: `✅ Siembra registrada. Se descontaron ${semillasNecesarias} ${itemSemilla.unidad} de semillas.`,
+        mensaje: resData.message,
       });
 
       showAlert({
         type: 'success',
         title: 'Ciclo Iniciado con Éxito',
-        message: `Se han descontado ${semillasNecesarias} ${itemSemilla.unidad} de semillas del inventario. El ciclo de ${form.rubro} ha comenzado.`,
+        message: resData.message,
         confirmText: 'Entendido'
       });
 
       setForm({ rubro: RUBROS_DISPONIBLES[0], hectareas: '', lote: '', fechaSiembra: '' });
-      if (onSiembraCreada) onSiembraCreada({ id: docRef.id, ...nuevaSiembra });
+      if (onSiembraCreada) {
+        // Adaptar campos de Timestamp de Firebase para el callback del frontend
+        const cropData = {
+          ...resData.crop,
+          // El backend retorna Timestamp de Firebase Admin, en el cliente se espera
+          // un objeto con toDate() o segundos/nanosegundos similar a Firestore Web
+          fechaSiembra: {
+            toDate: () => new Date(resData.crop.fechaSiembra._seconds * 1000),
+            seconds: resData.crop.fechaSiembra._seconds,
+            nanoseconds: resData.crop.fechaSiembra._nanoseconds,
+          },
+          fechaFinalizacion: {
+            toDate: () => new Date(resData.crop.fechaFinalizacion._seconds * 1000),
+            seconds: resData.crop.fechaFinalizacion._seconds,
+            nanoseconds: resData.crop.fechaFinalizacion._nanoseconds,
+          },
+          createdAt: {
+            toDate: () => new Date(resData.crop.createdAt._seconds * 1000),
+            seconds: resData.crop.createdAt._seconds,
+            nanoseconds: resData.crop.createdAt._nanoseconds,
+          },
+          tareas: resData.crop.tareas.map((t) => ({
+            ...t,
+            fechaEjecucion: {
+              toDate: () => new Date(t.fechaEjecucion._seconds * 1000),
+              seconds: t.fechaEjecucion._seconds,
+              nanoseconds: t.fechaEjecucion._nanoseconds,
+            },
+          })),
+        };
+        onSiembraCreada(cropData);
+      }
     } catch (err) {
       setEstado({ tipo: 'error', mensaje: `❌ ${err.message}` });
       showAlert({ type: 'error', title: 'Error en el Flujo', message: err.message, confirmText: 'Cerrar' });

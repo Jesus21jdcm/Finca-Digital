@@ -4,7 +4,8 @@
   min-height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centrado horizontal global */
+  align-items: center;
+  /* Centrado horizontal global */
   overflow-y: auto;
 }
 
@@ -38,8 +39,8 @@
   background: white;
   padding: 10px;
   border-radius: 24px;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   width: fit-content;
 }
 
@@ -84,7 +85,9 @@
 }
 
 /* ── Content Wrappers ── */
-.content, .historyGrid, .satContent {
+.content,
+.historyGrid,
+.satContent {
   width: 100%;
   max-width: 1000px;
   display: flex;
@@ -97,16 +100,23 @@
   background: white;
   padding: 56px;
   border-radius: 40px;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.12);
   width: 100%;
   max-width: 850px;
-  border: 1px solid rgba(255,255,255,1);
+  border: 1px solid rgba(255, 255, 255, 1);
   animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .formGrid {
@@ -130,7 +140,8 @@
   padding-left: 4px;
 }
 
-.formGroup input, .formGroup textarea {
+.formGroup input,
+.formGroup textarea {
   padding: 18px 20px;
   border-radius: 20px;
   border: 2px solid #f1f5f9;
@@ -204,8 +215,8 @@
   background: white;
   padding: 40px;
   border-radius: 32px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.02);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -213,13 +224,16 @@
 
 .historyCard:hover {
   transform: translateY(-8px) scale(1.01);
-  box-shadow: 0 25px 60px rgba(0,0,0,0.1);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.1);
 }
 
 .historyCard::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; width: 10px; height: 100%;
+  top: 0;
+  left: 0;
+  width: 10px;
+  height: 100%;
   background: linear-gradient(180deg, #10b981, #059669);
 }
 
@@ -307,7 +321,7 @@
   padding: 4px 10px;
   border-radius: 8px;
   background: white;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .recommendationBox {
@@ -348,7 +362,7 @@
   gap: 32px;
   width: 100%;
   max-width: 850px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.05);
   border: 1px solid #f1f5f9;
 }
 
@@ -379,14 +393,15 @@
 }
 
 .satCard {
-  background: #020617; /* Súper contraste oscuro */
+  background: #020617;
+  /* Súper contraste oscuro */
   color: white;
   padding: 48px;
   border-radius: 40px;
   width: 100%;
   max-width: 850px;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
 }
 
@@ -408,22 +423,22 @@
   border-radius: 32px;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .satData {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
   padding: 32px;
   border-radius: 28px;
   margin-bottom: 32px;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .satRow {
   display: flex;
   justify-content: space-between;
   padding: 16px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 16px;
 }
 
@@ -474,7 +489,7 @@
   text-align: center;
   width: 100%;
   max-width: 650px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
 }
 
 .warningCard h3 {
@@ -492,10 +507,13 @@
 }
 
 @media (max-width: 768px) {
-  .formCard, .satCard, .historyCard {
+
+  .formCard,
+  .satCard,
+  .historyCard {
     padding: 32px;
   }
-  
+
   .metricsGrid {
     grid-template-columns: repeat(2, 1fr);
   }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { auth } from '../firebase';
-import { fetchAllUsers, updateUserRole, createNewUser, deleteUser } from '../services/userService';
+import { fetchAllUsers, updateUserRole, createNewUser, deleteUser } from '../server/services/userService';
 import { useAppContext } from '../context/AppContext';
 import styles from './UsersManagement.module.css';
 
