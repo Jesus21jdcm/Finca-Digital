@@ -36,7 +36,7 @@ html,
 body {
   height: 100%;
   font-family: 'Inter', sans-serif;
-  background-color: var(--cream);
+  background-color: #f3efe9;
   color: var(--gray-800);
   font-size: 14px;
   line-height: 1.5;

@@ -25,7 +25,7 @@ export default function Header({ onNavigate, userRole }) {
               <h1 className={styles.brandName}>FINCA DIGITAL</h1>
               <div className={styles.divider}></div>
               <div className={styles.brandSub}>
-                <h2 className={styles.mainTitle}>Panel Administrativo - Finca Digital</h2>
+                <h2 className={styles.mainTitle}>Panel Administrativo</h2>
                 <p className={styles.subTitle}>Sistema de Gestión Agrícola</p>
               </div>
             </div>
@@ -42,14 +42,14 @@ export default function Header({ onNavigate, userRole }) {
             <button className={styles.themeToggle} onClick={toggleTheme} title="Cambiar Tema">
               {theme === 'light' ? '🌙' : '☀️'}
             </button>
-            <button className={styles.outlineBtn} onClick={handleLogout}>
+            <button className={styles.logoutBtn} onClick={handleLogout}>
               Cerrar Sesión
             </button>
           </div>
 
           <div className={styles.userProfile}>
             <div className={styles.avatar}>
-              <img src="https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff" alt="User" />
+              AD
             </div>
             <div className={styles.userDetails}>
               <span className={styles.userName}>admin</span>

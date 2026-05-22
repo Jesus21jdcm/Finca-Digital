@@ -49,7 +49,7 @@ function AppContent({ user, userRole, securitySetupNeeded, setSecuritySetupNeede
   };
 
   return (
-    <div className={styles.appLayout}>
+    <div className={`${styles.appLayout} ${activePage === 'dashboard' ? styles.dashboardBg : ''}`}>
       <Header onNavigate={setActivePage} userRole={userRole} />
 
       <main className={styles.mainContent}>

@@ -1,173 +1,130 @@
 .weatherCard {
   background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #3b82f6 100%);
   border-radius: var(--radius-2xl);
-  padding: 32px;
+  padding: 24px;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   color: white;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 10px 25px rgba(30, 58, 138, 0.4);
   position: relative;
   overflow: hidden;
-  height: 280px;
 }
 
-.left {
+.topSection {
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
+  align-items: flex-start;
   z-index: 2;
-  flex: 1;
 }
 
-.mainInfo {
+.leftInfo {
   display: flex;
   flex-direction: column;
-}
-
-.temp {
-  font-size: 84px;
-  font-weight: 900;
-  line-height: 0.9;
-  letter-spacing: -0.05em;
-}
-
-.locationInfo {
-  margin-top: 12px;
 }
 
 .location {
-  font-size: 20px;
-  font-weight: 800;
-}
-
-.probability {
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
   opacity: 0.9;
-  font-weight: 600;
 }
 
-.forecast {
+.tempRow {
   display: flex;
-  gap: 16px;
-  margin-top: 32px;
-}
-
-.forecastItem {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 16px;
 }
 
-.fIcon {
-  font-size: 14px;
+.temp {
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
 }
 
-.fLine {
-  width: 12px;
-  height: 2px;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 1px;
+.celsius {
+  font-size: 32px;
+  vertical-align: super;
+  font-weight: 300;
 }
 
-.fTime {
-  font-size: 10px;
-  font-weight: 700;
-  opacity: 0.8;
-  white-space: nowrap;
+.conditionText {
+  font-size: 18px;
+  font-weight: 500;
+  opacity: 0.9;
+  max-width: 140px;
+  line-height: 1.2;
 }
 
-@media (max-width: 768px) {
-  .weatherCard {
-    padding: 24px;
-    height: auto;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .right {
-    width: 100%;
-    order: -1;
-  }
-
-  .cloudWrapper {
-    width: 120px;
-    height: 90px;
-  }
-
-  .temp {
-    font-size: 54px;
-    text-align: center;
-  }
-
-  .locationInfo {
-    text-align: center;
-  }
-
-  .location {
-    font-size: 16px;
-  }
-
-  .forecast {
-    justify-content: center;
-    gap: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .weatherCard {
-    padding: 16px;
-  }
-
-  .temp {
-    font-size: 42px;
-  }
-
-  .conditionText {
-    font-size: 14px;
-  }
-
-  .forecast {
-    gap: 8px;
-  }
-
-  .fTime {
-    font-size: 9px;
-  }
-}
-
-.right {
+.rightIcon {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 2;
-  width: 200px;
 }
 
 .cloudWrapper {
-  width: 180px;
-  height: 140px;
+  width: 100px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
 }
 
 .cloudImg {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.3));
 }
 
-.conditionText {
-  font-size: 16px;
-  font-weight: 700;
-  text-align: center;
+.divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 16px 0;
+  z-index: 2;
+  position: relative;
 }
 
-/* Glass overlay */
+.bottomSection {
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+
+.forecast {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.forecastItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.fDay {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.fIcon {
+  font-size: 18px;
+}
+
+.footerInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.8;
+  padding: 0 8px;
+}
+
 .weatherCard::before {
   content: "";
   position: absolute;
